@@ -3,12 +3,12 @@ using Model;
 
 namespace DataLayer
 {
-    public class SalesOrderConfiguration : EntityTypeConfiguration<SalesOrder>
+  public class SalesOrderConfiguration : EntityTypeConfiguration<SalesOrder>
+  {
+    public SalesOrderConfiguration()
     {
-        public SalesOrderConfiguration()
-        {
-            Property(so => so.CustomerName).HasMaxLength(30).IsRequired();
-            Property(so => so.PONumber).HasMaxLength(10).IsOptional();
-        }
+      Property(so => so.CustomerName).HasMaxLength(30).IsRequired();
+      Property(so => so.PONumber).HasMaxLength(10).IsOptional();
     }
+  }
 }
