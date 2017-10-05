@@ -9,6 +9,7 @@
 @{ string data = new JavaScriptSerializer().Serialize(Model);}
 
 @section scripts{
+  <!--sections don't work in partial view by design!-->
   <script src="~/Scripts/knockout-3.4.2.js"></script>
   <script src="~/Scripts/knockout.mapping-latest.js"></script>
   <script src="~/Scripts/salesorderviewmodel.js"></script>
@@ -18,23 +19,4 @@
   </script>
 }
 
-<h2>@ViewBag.Title</h2>
-
-<p data-bind="text: MessageToClient"></p>
-
-<div>
-  <div>
-    <label>Customer Name:</label>
-    <input data-bind="value: CustomerName, event: {change: flagSalesOrderAsEdited}" />
-  </div>
-  <div>
-    <label>P.O. Number:</label>
-    <input data-bind="value: PONumber, event: {change: flagSalesOrderAsEdited}" />
-  </div>
-</div>
-
-<p><button data-bind="click: save">Save</button></p>
-
-<p>
-  @Html.ActionLink("Back to List", "Index")
-</p>
+@Html.Partial("_EditSalesOrder")
