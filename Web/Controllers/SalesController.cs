@@ -1,4 +1,5 @@
 ﻿using System.Data.Entity;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Net;
 using System.Web.Mvc;
@@ -50,24 +51,8 @@ namespace Web.Controllers
     // GET: Sales/Create
     public ActionResult Create()
     {
-      return View();
-    }
-
-    // POST: Sales/Create
-    // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-    // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<ActionResult> Create([Bind(Include = "SalesOrderId,CustomerName,PONumber")] SalesOrder salesOrder)
-    {
-      if (ModelState.IsValid)
-      {
-        _salesContext.SalesOrders.Add(salesOrder);
-        await _salesContext.SaveChangesAsync();
-        return RedirectToAction("Index");
-      }
-
-      return View(salesOrder);
+      var salesOrderViewModel = new SalesOrderViewModel {ObjectState = ObjectState.Added };
+      return View(salesOrderViewModel);
     }
 
     // GET: Sales/Edit/5
@@ -77,28 +62,23 @@ namespace Web.Controllers
       {
         return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
       }
-      SalesOrder salesOrder = await _salesContext.SalesOrders.FindAsync(id);
+
+      var salesOrder = await _salesContext.SalesOrders.FindAsync(id);
       if (salesOrder == null)
       {
         return HttpNotFound();
       }
-      return View(salesOrder);
-    }
 
-    // POST: Sales/Edit/5
-    // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-    // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<ActionResult> Edit([Bind(Include = "SalesOrderId,CustomerName,PONumber")] SalesOrder salesOrder)
-    {
-      if (ModelState.IsValid)
+      var salesOrderViewModel = new SalesOrderViewModel
       {
-        _salesContext.Entry(salesOrder).State = EntityState.Modified;
-        await _salesContext.SaveChangesAsync();
-        return RedirectToAction("Index");
-      }
-      return View(salesOrder);
+        SalesOrderId = salesOrder.SalesOrderId,
+        CustomerName = salesOrder.CustomerName,
+        PONumber = salesOrder.PONumber,
+        ObjectState = ObjectState.Unchanged
+      };
+      salesOrderViewModel.MessageToClient = string.Format("The original value of Customer Name is {0}.", salesOrderViewModel.CustomerName);
+
+      return View(salesOrderViewModel);
     }
 
     // GET: Sales/Delete/5
@@ -108,23 +88,57 @@ namespace Web.Controllers
       {
         return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
       }
-      SalesOrder salesOrder = await _salesContext.SalesOrders.FindAsync(id);
+
+      var salesOrder = await _salesContext.SalesOrders.FindAsync(id);
       if (salesOrder == null)
       {
         return HttpNotFound();
       }
-      return View(salesOrder);
+
+      var salesOrderViewModel = new SalesOrderViewModel
+      {
+        SalesOrderId = salesOrder.SalesOrderId,
+        CustomerName = salesOrder.CustomerName,
+        PONumber = salesOrder.PONumber,
+        MessageToClient = "You are about to permanently delete this sales order.",
+        ObjectState = ObjectState.Deleted
+      };
+
+      return View(salesOrderViewModel);
     }
 
-    // POST: Sales/Delete/5
-    [HttpPost, ActionName("Delete")]
-    [ValidateAntiForgeryToken]
-    public async Task<ActionResult> DeleteConfirmed(int id)
+    public async Task<JsonResult> Save(SalesOrderViewModel salesOrderViewModel)
     {
-      SalesOrder salesOrder = await _salesContext.SalesOrders.FindAsync(id);
-      _salesContext.SalesOrders.Remove(salesOrder);
+      var salesOrder = new SalesOrder
+      {
+        SalesOrderId = salesOrderViewModel.SalesOrderId,
+        CustomerName = salesOrderViewModel.CustomerName,
+        PONumber = salesOrderViewModel.PONumber,
+        ObjectState = salesOrderViewModel.ObjectState
+      };
+
+      _salesContext.SalesOrders.Attach(salesOrder);
+      _salesContext.ChangeTracker.Entries<IObjectWithState>().Single().State = Helpers.ConvertState(salesOrder.ObjectState);
       await _salesContext.SaveChangesAsync();
-      return RedirectToAction("Index");
+
+      if (salesOrder.ObjectState == ObjectState.Deleted)
+        return Json(new { newLocation = "/Sales/Index/" });
+
+      switch (salesOrderViewModel.ObjectState)
+      {
+        case ObjectState.Added:
+          salesOrderViewModel.MessageToClient = string.Format("A sales order for {0} has been added to the database.", salesOrder.CustomerName);
+          break;
+
+        case ObjectState.Modified:
+          salesOrderViewModel.MessageToClient = string.Format("The customer name for this sales order has been updated to {0} in the database.", salesOrder.CustomerName);
+          break;
+      }
+
+      salesOrderViewModel.SalesOrderId = salesOrder.SalesOrderId;
+      salesOrderViewModel.ObjectState = ObjectState.Unchanged;
+
+      return Json(new { salesOrderViewModel }); // watch out that the client AJAX response gets this as data.salesOrderViewModel
     }
 
     protected override void Dispose(bool disposing)
