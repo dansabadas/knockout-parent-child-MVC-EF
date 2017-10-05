@@ -1,20 +1,16 @@
-﻿
-<h2>@ViewBag.Title</h2>
+﻿<h2>@ViewBag.Title</h2>
 
 <p data-bind="text: MessageToClient"></p>
 
 <div>
-  <div>
-    <label>Customer Name:</label>
-    <span data-bind="text: CustomerName"></span>
+  <div class="form-group">
+    <label class="control-label">Customer Name:</label>
+    <span class="form-control" data-bind="text: CustomerName"></span>
   </div>
-  <div>
-    <label>P.O. Number:</label>
-    <span data-bind="text: PONumber"></span>
+  <div class="form-group">
+    <label class="control-label">P.O. Number:</label>
+    <span class="form-control" data-bind="text: PONumber"></span>
   </div>
 </div>
 
-<p>
-  @Html.ActionLink("Edit", "Edit", new { id = Model.SalesOrderId }) |
-  @Html.ActionLink("Back to List", "Index")
-</p>
+<p><a class="btn btn-default btn-sm" href="/">&laquo; Back to List</a></p>

@@ -3,18 +3,18 @@
 <p data-bind="text: MessageToClient"></p>
 
 <div>
-  <div>
-    <label>Customer Name:</label>
-    <input data-bind="value: CustomerName, event: {change: flagSalesOrderAsEdited}" />
+  <div class="form-group">
+    <label class="control-label" for="CustomerName">Customer Name:</label>
+    <input class="form-control" name="CustomerName" id="CustomerName" data-bind="value: CustomerName, event: {change: flagSalesOrderAsEdited}" />
   </div>
-  <div>
-    <label>P.O. Number:</label>
-    <input data-bind="value: PONumber, event: {change: flagSalesOrderAsEdited}" />
+  <div class="form-group">
+    <label class="control-label" for="PONumber">P.O. Number:</label>
+    <input class="form-control" name="PONumber" id="PONumber" data-bind="value: PONumber, event: {change: flagSalesOrderAsEdited}" />
   </div>
 </div>
 
-<p><button data-bind="click: save">Save</button></p>
+<p><a class="btn btn-default btn-sm" href="/">&laquo; Back to List</a></p>
 
-<p>
-  @Html.ActionLink("Back to List", "Index")
-</p>
+<p><button class="btn btn-primary" data-bind="click: save">Save</button></p>
+
+

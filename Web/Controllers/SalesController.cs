@@ -37,13 +37,8 @@ namespace Web.Controllers
         return HttpNotFound();
       }
 
-      var salesOrderViewModel = new SalesOrderViewModel
-      {
-        SalesOrderId = salesOrder.SalesOrderId,
-        CustomerName = salesOrder.CustomerName,
-        PONumber = salesOrder.PONumber,
-        MessageToClient = "I originated from the viewmodel, rather than the model."
-      }; // mapping happens here
+      var salesOrderViewModel = ViewModels.Helpers.CreateSalesOrderViewModelFromSalesOrder(salesOrder);
+      salesOrderViewModel.MessageToClient = "I originated from the viewmodel, rather than the model.";
 
       return View(salesOrderViewModel);
     }
@@ -69,13 +64,8 @@ namespace Web.Controllers
         return HttpNotFound();
       }
 
-      var salesOrderViewModel = new SalesOrderViewModel
-      {
-        SalesOrderId = salesOrder.SalesOrderId,
-        CustomerName = salesOrder.CustomerName,
-        PONumber = salesOrder.PONumber,
-        ObjectState = ObjectState.Unchanged
-      };
+      var salesOrderViewModel = ViewModels.Helpers.CreateSalesOrderViewModelFromSalesOrder(salesOrder);
+      salesOrderViewModel.ObjectState = ObjectState.Unchanged;
       salesOrderViewModel.MessageToClient = string.Format("The original value of Customer Name is {0}.", salesOrderViewModel.CustomerName);
 
       return View(salesOrderViewModel);
@@ -95,45 +85,26 @@ namespace Web.Controllers
         return HttpNotFound();
       }
 
-      var salesOrderViewModel = new SalesOrderViewModel
-      {
-        SalesOrderId = salesOrder.SalesOrderId,
-        CustomerName = salesOrder.CustomerName,
-        PONumber = salesOrder.PONumber,
-        MessageToClient = "You are about to permanently delete this sales order.",
-        ObjectState = ObjectState.Deleted
-      };
+      var salesOrderViewModel = ViewModels.Helpers.CreateSalesOrderViewModelFromSalesOrder(salesOrder);
+      salesOrderViewModel.MessageToClient = "You are about to permanently delete this sales order.";
+      salesOrderViewModel.ObjectState = ObjectState.Deleted;
 
       return View(salesOrderViewModel);
     }
 
     public async Task<JsonResult> Save(SalesOrderViewModel salesOrderViewModel)
     {
-      var salesOrder = new SalesOrder
-      {
-        SalesOrderId = salesOrderViewModel.SalesOrderId,
-        CustomerName = salesOrderViewModel.CustomerName,
-        PONumber = salesOrderViewModel.PONumber,
-        ObjectState = salesOrderViewModel.ObjectState
-      };
+      var salesOrder = ViewModels.Helpers.CreateSalesOrderFromSalesOrderViewModel(salesOrderViewModel);
+      salesOrder.ObjectState = salesOrderViewModel.ObjectState;
 
       _salesContext.SalesOrders.Attach(salesOrder);
-      _salesContext.ChangeTracker.Entries<IObjectWithState>().Single().State = Helpers.ConvertState(salesOrder.ObjectState);
+      _salesContext.ChangeTracker.Entries<IObjectWithState>().Single().State = DataLayer.Helpers.ConvertState(salesOrder.ObjectState);
       await _salesContext.SaveChangesAsync();
 
       if (salesOrder.ObjectState == ObjectState.Deleted)
         return Json(new { newLocation = "/Sales/Index/" });
 
-      switch (salesOrderViewModel.ObjectState)
-      {
-        case ObjectState.Added:
-          salesOrderViewModel.MessageToClient = string.Format("A sales order for {0} has been added to the database.", salesOrder.CustomerName);
-          break;
-
-        case ObjectState.Modified:
-          salesOrderViewModel.MessageToClient = string.Format("The customer name for this sales order has been updated to {0} in the database.", salesOrder.CustomerName);
-          break;
-      }
+      salesOrderViewModel.MessageToClient = ViewModels.Helpers.GetMessageToClient(salesOrderViewModel.ObjectState, salesOrder.CustomerName);
 
       salesOrderViewModel.SalesOrderId = salesOrder.SalesOrderId;
       salesOrderViewModel.ObjectState = ObjectState.Unchanged;
