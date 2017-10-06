@@ -74,4 +74,11 @@ SalesOrderViewModel = function (data) {
       });
       return total.toFixed(2);
     });
+
+    self.deleteSalesOrderItem = function (salesOrderItem) {
+      self.SalesOrderItems.remove(this);  // self.SalesOrderItems is ko property but still can access array-ish methods like remove; this === salesOrderItem
+
+      if (salesOrderItem.SalesOrderItemId() > 0 && self.SalesOrderItemsToDelete.indexOf(salesOrderItem.SalesOrderItemId()) === -1)
+        self.SalesOrderItemsToDelete.push(salesOrderItem.SalesOrderItemId());
+    };
 };

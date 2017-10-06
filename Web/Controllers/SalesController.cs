@@ -85,6 +85,7 @@ namespace Web.Controllers
 
       var salesOrderViewModel = ViewModels.Helpers.CreateSalesOrderViewModelFromSalesOrder(salesOrder);
       salesOrderViewModel.MessageToClient = "You are about to permanently delete this sales order.";
+      salesOrderViewModel.ObjectState = ObjectState.Deleted;
 
       return View(salesOrderViewModel);
     }
@@ -92,9 +93,28 @@ namespace Web.Controllers
     public async Task<JsonResult> Save(SalesOrderViewModel salesOrderViewModel)
     {
       var salesOrder = ViewModels.Helpers.CreateSalesOrderFromSalesOrderViewModel(salesOrderViewModel);
-      salesOrder.ObjectState = salesOrderViewModel.ObjectState;
 
       _salesContext.SalesOrders.Attach(salesOrder);
+
+      if (salesOrder.ObjectState == ObjectState.Deleted)  // cascade delete if the parent order is to be deleted
+      {
+        foreach (SalesOrderItemViewModel salesOrderItemViewModel in salesOrderViewModel.SalesOrderItems)
+        {
+          SalesOrderItem salesOrderItem = _salesContext.SalesOrderItems.Find(salesOrderItemViewModel.SalesOrderItemId);
+          if (salesOrderItem != null)
+            salesOrderItem.ObjectState = ObjectState.Deleted;
+        }
+      }
+      else
+      {
+        foreach (int salesOrderItemId in salesOrderViewModel.SalesOrderItemsToDelete) // if not => see if any children need to be deleted
+        {
+          SalesOrderItem salesOrderItem = _salesContext.SalesOrderItems.Find(salesOrderItemId);
+          if (salesOrderItem != null)
+            salesOrderItem.ObjectState = ObjectState.Deleted;
+        }
+      }
+
       _salesContext.ApplyStateChanges();
       await _salesContext.SaveChangesAsync();
 
