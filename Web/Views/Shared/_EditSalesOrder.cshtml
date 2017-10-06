@@ -2,31 +2,32 @@
 
 <p data-bind="text: MessageToClient"></p>
 
-<div>
+<form>
   <div class="form-group">
     <label class="control-label" for="CustomerName">Customer Name:</label>
-    <input class="form-control" name="CustomerName" id="CustomerName" data-bind="value: CustomerName, event: {change: flagSalesOrderAsEdited}" />
+    <input class="form-control" name="CustomerName" data-bind="value: CustomerName, event: {change: flagSalesOrderAsEdited}" />
   </div>
   <div class="form-group">
     <label class="control-label" for="PONumber">P.O. Number:</label>
-    <input class="form-control" name="PONumber" id="PONumber" data-bind="value: PONumber, event: {change: flagSalesOrderAsEdited}" />
+    <input class="form-control" name="PONumber" data-bind="value: PONumber, event: {change: flagSalesOrderAsEdited}" />
   </div>
+
   <table class="table table-striped">
     <tr>
       <th>Product Code</th>
-      <th>Quantity</th>
-      <th>Unit Price</th>
-      <th>Extended Price</th>
+      <th class="text-right">Quantity</th>
+      <th class="text-right">Unit Price</th>
+      <th class="text-right">Extended</th>
       <th><button class="btn btn-info btn-xs" data-bind="click: addSalesOrderItem">Add</button></th>
     </tr>
     <tbody data-bind="foreach: SalesOrderItems">
-    <tr>
-      <td class="form-group"><input class="form-control input-sm" data-bind="value: ProductCode, event: {change: flagSalesOrderItemAsEdited}, hasfocus: true" /></td>
-      <td class="form-group"><input class="form-control input-sm text-right" data-bind="value: Quantity, event: {change: flagSalesOrderItemAsEdited}" /></td>
-      <td class="form-group"><input class="form-control input-sm text-right" data-bind="value: UnitPrice, event: {change: flagSalesOrderItemAsEdited}" /></td>
-      <td class="form-group"><span class="form-control text-right" data-bind="text: ExtendedPrice"></span></td>
-      <td class="form-group"><button class="btn btn-danger btn-xs" data-bind="click: $parent.deleteSalesOrderItem">Delete</button></td>
-    </tr>
+      <tr>
+        <td class="form-group"><input name="ProductCode" class="form-control input-sm" data-bind="attr: {'id': 'ProductCode_' + $index()}, value: ProductCode, event: {change: flagSalesOrderItemAsEdited}, hasfocus: true" /></td>
+        <td class="form-group"><input name="Quantity" class="form-control input-sm text-right" data-bind="attr: {'id': 'Quantity_' + $index()}, value: Quantity, event: {change: flagSalesOrderItemAsEdited}" /></td>
+        <td class="form-group"><input name="UnitPrice" class="form-control input-sm text-right" data-bind="attr: {'id': 'UnitPrice_' + $index()}, value: UnitPrice, event: {change: flagSalesOrderItemAsEdited}" /></td>
+        <td class="form-group"><span class="form-control text-right" data-bind="text: ExtendedPrice"></span></td>
+        <td class="form-group"><button class="btn btn-danger btn-xs" data-bind="click: $parent.deleteSalesOrderItem">Delete</button></td>
+      </tr>
     </tbody>
     <tr>
       <td>&nbsp;</td>
@@ -36,10 +37,9 @@
       <td>&nbsp;</td>
     </tr>
   </table>
-</div>
 
-<p><a class="btn btn-default btn-sm" href="/">&laquo; Back to List</a></p>
+  <p><a class="btn btn-default btn-sm" href="/">&laquo; Back to List</a></p>
 
-<p><button class="btn btn-primary" data-bind="click: save">Save</button></p>
-
+  <p><button class="btn btn-primary" type="submit">Save</button></p>
+</form>
 

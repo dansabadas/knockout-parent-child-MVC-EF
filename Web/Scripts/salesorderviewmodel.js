@@ -82,3 +82,59 @@ SalesOrderViewModel = function (data) {
         self.SalesOrderItemsToDelete.push(salesOrderItem.SalesOrderItemId());
     };
 };
+
+$("form").validate({  // handles when the submit event fires
+  submitHandler: function () {
+    salesOrderViewModel.save(); // nasty as this code requires that salesOrderViewModel was previously declared globally (on window)
+  },
+
+  rules: {
+    CustomerName: {
+      required: true,
+      maxlength: 30
+    },
+    PONumber: {
+      maxlength: 10
+    },
+    ProductCode: {
+      required: true,
+      maxlength: 15,
+      alphaonly: true
+    },
+    Quantity: {
+      required: true,
+      digits: true, // integer only
+      range: [1, 1000000]
+    },
+    UnitPrice: {
+      required: true,
+      number: true, // this could be decimal
+      range: [0, 100000]
+    }
+  },
+
+  messages: {
+    CustomerName: {
+      required: "You cannot create a sales order unless you supply the customer's name.",
+      maxlength: "Customer names must be 30 characters or shorter."
+    },
+    ProductCode: {
+      alphaonly: "Product codes consist of letters only."
+    }
+  },
+
+  tooltip_options: {
+    CustomerName: {
+      placement: 'right'
+    },
+    PONumber: {
+      placement: 'right'
+    }
+  }
+});
+
+$.validator.addMethod("alphaonly",
+    function (value) {
+      return /^[A-Za-z]+$/.test(value);
+    }
+);
