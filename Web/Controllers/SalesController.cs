@@ -1,5 +1,4 @@
 ﻿using System.Data.Entity;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Net;
 using System.Web.Mvc;
@@ -65,7 +64,6 @@ namespace Web.Controllers
       }
 
       var salesOrderViewModel = ViewModels.Helpers.CreateSalesOrderViewModelFromSalesOrder(salesOrder);
-      salesOrderViewModel.ObjectState = ObjectState.Unchanged;
       salesOrderViewModel.MessageToClient = string.Format("The original value of Customer Name is {0}.", salesOrderViewModel.CustomerName);
 
       return View(salesOrderViewModel);
@@ -87,7 +85,6 @@ namespace Web.Controllers
 
       var salesOrderViewModel = ViewModels.Helpers.CreateSalesOrderViewModelFromSalesOrder(salesOrder);
       salesOrderViewModel.MessageToClient = "You are about to permanently delete this sales order.";
-      salesOrderViewModel.ObjectState = ObjectState.Deleted;
 
       return View(salesOrderViewModel);
     }
@@ -98,16 +95,15 @@ namespace Web.Controllers
       salesOrder.ObjectState = salesOrderViewModel.ObjectState;
 
       _salesContext.SalesOrders.Attach(salesOrder);
-      _salesContext.ChangeTracker.Entries<IObjectWithState>().Single().State = DataLayer.Helpers.ConvertState(salesOrder.ObjectState);
+      _salesContext.ApplyStateChanges();
       await _salesContext.SaveChangesAsync();
 
       if (salesOrder.ObjectState == ObjectState.Deleted)
         return Json(new { newLocation = "/Sales/Index/" });
 
-      salesOrderViewModel.MessageToClient = ViewModels.Helpers.GetMessageToClient(salesOrderViewModel.ObjectState, salesOrder.CustomerName);
-
-      salesOrderViewModel.SalesOrderId = salesOrder.SalesOrderId;
-      salesOrderViewModel.ObjectState = ObjectState.Unchanged;
+      string messageToClient = ViewModels.Helpers.GetMessageToClient(salesOrderViewModel.ObjectState, salesOrder.CustomerName);
+      salesOrderViewModel = ViewModels.Helpers.CreateSalesOrderViewModelFromSalesOrder(salesOrder);
+      salesOrderViewModel.MessageToClient = messageToClient;
 
       return Json(new { salesOrderViewModel }); // watch out that the client AJAX response gets this as data.salesOrderViewModel
     }

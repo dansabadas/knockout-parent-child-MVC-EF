@@ -11,6 +11,22 @@
     <label class="control-label" for="PONumber">P.O. Number:</label>
     <input class="form-control" name="PONumber" id="PONumber" data-bind="value: PONumber, event: {change: flagSalesOrderAsEdited}" />
   </div>
+  <table class="table table-striped">
+    <tr>
+      <th>Product Code</th>
+      <th>Quantity</th>
+      <th>Unit Price</th>
+      <th><button class="btn btn-info btn-xs" data-bind="click: addSalesOrderItem">Add</button></th>
+    </tr>
+    <tbody data-bind="foreach: SalesOrderItems">
+      <tr>
+        <td class="form-group"><input class="form-control input-sm" data-bind="value: ProductCode" /></td>
+        <td class="form-group"><input class="form-control input-sm" data-bind="value: Quantity" /></td>
+        <td class="form-group"><input class="form-control input-sm" data-bind="value: UnitPrice" /></td>
+        <td class="form-group">Delete</td>
+      </tr>
+    </tbody>
+  </table>
 </div>
 
 <p><a class="btn btn-default btn-sm" href="/">&laquo; Back to List</a></p>

@@ -11,6 +11,21 @@
     <label class="control-label">P.O. Number:</label>
     <span class="form-control" data-bind="text: PONumber"></span>
   </div>
+  
+  <table class="table table-striped">
+    <tr>
+      <th>Product Code</th>
+      <th>Quantity</th>
+      <th>Unit Price</th>
+    </tr>
+    <tbody data-bind="foreach: SalesOrderItems">
+      <tr>
+        <td class="form-group"><span class="form-control input-sm" data-bind="text: ProductCode"></span></td>
+        <td class="form-group"><span class="form-control input-sm" data-bind="text: Quantity"></span></td>
+        <td class="form-group"><span class="form-control input-sm" data-bind="text: UnitPrice"></span></td>
+      </tr>
+    </tbody>
+  </table>
 </div>
 
 <p><a class="btn btn-default btn-sm" href="/">&laquo; Back to List</a></p>
