@@ -90,8 +90,14 @@ namespace Web.Controllers
       return View(salesOrderViewModel);
     }
 
+    [HandleModelStateException]
     public async Task<JsonResult> Save(SalesOrderViewModel salesOrderViewModel)
     {
+      if (!ModelState.IsValid)
+      {
+        throw new ModelStateException(ModelState);  // if this is thrown => HandleModelStateException Attribute above will intercept the exception
+      }
+
       var salesOrder = ViewModels.Helpers.CreateSalesOrderFromSalesOrderViewModel(salesOrderViewModel);
 
       _salesContext.SalesOrders.Attach(salesOrder);

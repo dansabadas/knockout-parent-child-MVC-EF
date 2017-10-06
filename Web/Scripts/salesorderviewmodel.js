@@ -50,6 +50,9 @@ SalesOrderViewModel = function (data) {
 
           if (data.newLocation != null)
             window.location = data.newLocation;
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+          $('#MessageToClient').text(XMLHttpRequest.status === 400 ? XMLHttpRequest.responseText : 'The web server had an error.');
         }
       });
     }
