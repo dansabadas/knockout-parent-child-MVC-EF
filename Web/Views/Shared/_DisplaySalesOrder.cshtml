@@ -19,12 +19,18 @@
       <th>Unit Price</th>
     </tr>
     <tbody data-bind="foreach: SalesOrderItems">
-      <tr>
-        <td class="form-group"><span class="form-control input-sm" data-bind="text: ProductCode"></span></td>
-        <td class="form-group"><span class="form-control input-sm" data-bind="text: Quantity"></span></td>
-        <td class="form-group"><span class="form-control input-sm" data-bind="text: UnitPrice"></span></td>
-      </tr>
+    <tr>
+      <td class="form-group"><span class="form-control input-sm" data-bind="text: ProductCode"></span></td>
+      <td class="form-group"><span class="form-control input-sm" data-bind="text: Quantity"></span></td>
+      <td class="form-group"><span class="form-control input-sm" data-bind="text: UnitPrice"></span></td>
+    </tr>
     </tbody>
+    <tr>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td class="form-group"><span class="form-control text-right">Total</span></td>
+      <td class="form-group"><span class="form-control text-right" data-bind="text: Total"></span></td>
+    </tr>
   </table>
 </div>
 
