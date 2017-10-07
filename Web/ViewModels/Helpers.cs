@@ -14,8 +14,9 @@ namespace Web.ViewModels
         SalesOrderId = salesOrder.SalesOrderId,
         CustomerName = salesOrder.CustomerName,
         PONumber = salesOrder.PONumber,
-        ObjectState = ObjectState.Unchanged
-      };
+        ObjectState = ObjectState.Unchanged,
+        RowVersion = salesOrder.RowVersion
+    };
 
       foreach (SalesOrderItem salesOrderItem in salesOrder.SalesOrderItems)
       {
@@ -26,11 +27,13 @@ namespace Web.ViewModels
           Quantity = salesOrderItem.Quantity,
           UnitPrice = salesOrderItem.UnitPrice,
           ObjectState = ObjectState.Unchanged,
-          SalesOrderId = salesOrder.SalesOrderId
+          SalesOrderId = salesOrder.SalesOrderId,
+          RowVersion = salesOrderItem.RowVersion
         };
 
         salesOrderViewModel.SalesOrderItems.Add(salesOrderItemViewModel);
       }
+
       return salesOrderViewModel;
     }
 
@@ -42,7 +45,8 @@ namespace Web.ViewModels
         SalesOrderId = salesOrderViewModel.SalesOrderId,
         CustomerName = salesOrderViewModel.CustomerName,
         PONumber = salesOrderViewModel.PONumber,
-        ObjectState = salesOrderViewModel.ObjectState
+        ObjectState = salesOrderViewModel.ObjectState,
+        RowVersion = salesOrderViewModel.RowVersion
       };
 
       int temporarySalesOrderItemId = -1;
@@ -54,7 +58,8 @@ namespace Web.ViewModels
           ProductCode = salesOrderItemViewModel.ProductCode,
           Quantity = salesOrderItemViewModel.Quantity,
           UnitPrice = salesOrderItemViewModel.UnitPrice,
-          ObjectState = salesOrderItemViewModel.ObjectState
+          ObjectState = salesOrderItemViewModel.ObjectState,
+          RowVersion = salesOrderItemViewModel.RowVersion
         };
 
 

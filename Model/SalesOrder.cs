@@ -18,5 +18,7 @@ namespace Model
     public virtual List<SalesOrderItem> SalesOrderItems { get; set; }
 
     public ObjectState ObjectState { get; set; }
+
+    public byte[] RowVersion { get; set; }
   }
 }

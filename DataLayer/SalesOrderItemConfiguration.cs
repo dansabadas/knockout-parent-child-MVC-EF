@@ -15,7 +15,7 @@ namespace DataLayer
       Ignore(soi => soi.ObjectState);
 
       Property(soi => soi.SalesOrderId).HasColumnAnnotation("Index", new IndexAnnotation(new IndexAttribute("AK_SalesOrderItem", 1) { IsUnique = true }));
-
+      Property(so => so.RowVersion).IsRowVersion();
     }
   }
 }
