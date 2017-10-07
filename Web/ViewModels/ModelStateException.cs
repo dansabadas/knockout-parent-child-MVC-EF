@@ -23,6 +23,12 @@ namespace Web.ViewModels
       }
     }
 
+    public ModelStateException(Exception ex)
+    {
+      string message = (ex.InnerException != null && ex.InnerException.InnerException != null) ? ex.InnerException.InnerException.Message : ex.Message;
+      Errors = new Dictionary<string, string>();
+      Errors.Add(string.Empty, message);
+    }
 
     public ModelStateException(ModelStateDictionary modelState)
     {

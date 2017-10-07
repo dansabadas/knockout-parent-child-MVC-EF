@@ -122,7 +122,14 @@ namespace Web.Controllers
       }
 
       _salesContext.ApplyStateChanges();
-      await _salesContext.SaveChangesAsync();
+      try
+      {
+        await _salesContext.SaveChangesAsync();
+      }
+      catch (System.Exception ex)
+      {
+        throw new ModelStateException(ex);
+      }
 
       if (salesOrder.ObjectState == ObjectState.Deleted)
         return Json(new { newLocation = "/Sales/Index/" });
